@@ -2590,22 +2590,6 @@
 		pinctrl-0 = <&gpio_key_active &key_vol_up_default>;
 		pinctrl-1 = <&gpio_key_suspend>;
 
-		camera_focus {
-			label = "camera_focus";
-			gpios = <&tlmm 64 0x1>;
-			linux,input-type = <1>;
-			linux,code = <0x210>;
-			debounce-interval = <15>;
-		};
-
-		camera_snapshot {
-			label = "camera_snapshot";
-			gpios = <&tlmm 113 0x1>;
-			linux,input-type = <1>;
-			linux,code = <0x2fe>;
-			debounce-interval = <15>;
-		};
-
 		vol_up {
 			label = "volume_up";
 			gpios = <&pm660l_gpios 7 0x1>;
