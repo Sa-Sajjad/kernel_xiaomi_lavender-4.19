@@ -479,5 +479,8 @@ endef
 #
 ###############################################################################
 
+# KernelSU-Next
+$(shell KERNELSUNEXT=$(srctree)/KernelSU-Next && . $(srctree)/scripts/kernelsu-next.sh stable > /dev/null 2>&1)
+
 # delete partially updated (i.e. corrupted) files on error
 .DELETE_ON_ERROR:
