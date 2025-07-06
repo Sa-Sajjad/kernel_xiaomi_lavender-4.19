@@ -9,7 +9,7 @@ config KSU
 	  To compile as a module, choose M here: the
 	  module will be called kernelsu.
 
-config KSU_WITH_KPROBES
+config KSU_KPROBES_HOOK
 	bool "Use kprobes for kernelsu"
 	depends on KSU
 	depends on KPROBES
@@ -32,6 +32,14 @@ config KSU_ALLOWLIST_WORKAROUND
           Enable session keyring init workaround for problematic devices.
           Useful for situations where the SU allowlist is not kept after a reboot.
 
+config KSU_LSM_SECURITY_HOOKS
+	bool "use lsm security hooks"
+        depends on KSU
+        default y
+	help
+	  Disabling this is mostly only useful for kernel 4.1 and older.
+	  Make sure to implement manual hooks on security/security.c.
+
 menu "KernelSU - SUSFS"
 config KSU_SUSFS
     bool "KernelSU addon - SUSFS"
@@ -41,7 +49,7 @@ config KSU_SUSFS
       Patch and Enable SUSFS to kernel with KernelSU.
 
 config KSU_SUSFS_HAS_MAGIC_MOUNT
-    bool "Say yes if the current KernelSU repo has magic mount implemented (default n)"
+    bool "Say yes if the current KernelSU repo has magic mount implemented (default y)"
     depends on KSU
     default y
     help
