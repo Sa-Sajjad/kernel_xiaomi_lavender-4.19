@@ -149,3 +149,8 @@ bindings/display/qcom
 
 # Object directory
 out/
+
+# Ignoring build files
+error.log
+tc/
+*.zip
