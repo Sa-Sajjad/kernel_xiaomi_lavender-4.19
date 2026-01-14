@@ -20,6 +20,10 @@ _all:
 # o Look for make include files relative to root of kernel src
 MAKEFLAGS += -rR --include-dir=$(CURDIR)
 
+# Enable shell
+SHELL=/bin/bash
+export SHELL
+
 # Avoid funny character set dependencies
 unexport LC_ALL
 LC_COLLATE=C

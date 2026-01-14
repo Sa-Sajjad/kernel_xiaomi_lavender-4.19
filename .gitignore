@@ -149,5 +149,8 @@ kernel/configs/android-*.cfg
 /CLANG
 /GCC
 
+# RKSU
+KernelSU*/
+
 # Build log
 log.txt
