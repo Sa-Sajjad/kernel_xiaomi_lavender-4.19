@@ -154,3 +154,8 @@ KernelSU*/
 
 # Build log
 log.txt
+
+# Ignoring build files
+out/
+tc/
+*.zip
