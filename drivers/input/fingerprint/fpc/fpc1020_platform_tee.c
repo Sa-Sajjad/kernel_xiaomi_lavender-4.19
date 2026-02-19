@@ -681,7 +681,7 @@ static ssize_t compatible_all_set(struct device *dev, struct device_attribute *a
 									   NULL, fpc1020_irq_handler,
 									   irqf,
 									   dev_name(dev), fpc1020);
-		if (rc) {10;rgb:cccc/cccc/cccc
+		if (rc) {
 			dev_err(dev, "could not request irq %d\n", gpio_to_irq(fpc1020->irq_gpio));
 			goto exit;
 		}
@@ -713,10 +713,10 @@ static ssize_t compatible_all_set(struct device *dev, struct device_attribute *a
 		if (gpio_is_valid(fpc1020->rst_gpio)) {
 			devm_gpio_free(dev, fpc1020->rst_gpio);
 			pr_info("remove rst_gpio success\n");
-		}10;rgb:cccc/cccc/cccc
-		
+		}
+
 		devm_free_irq(dev, gpio_to_irq(fpc1020->irq_gpio), fpc1020);
-		
+
 		rc = select_pin_ctl(fpc1020, "fpc1020_avdd_suspend");
 		if (rc)
 			goto exit;
@@ -726,7 +726,7 @@ static ssize_t compatible_all_set(struct device *dev, struct device_attribute *a
 		if (rc)
 			goto exit;
 		usleep_range(PWR_ON_SLEEP_MIN_US, PWR_ON_SLEEP_MAX_US);
-		
+
 		fpc1020->compatible_enabled = 0;
 	}
 	return count;
