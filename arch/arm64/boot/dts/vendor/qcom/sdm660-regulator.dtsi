@@ -262,7 +262,9 @@
 		pm660_l13: regulator-l13 {
 			regulator-min-microvolt = <1780000>;
 			regulator-max-microvolt = <1950000>;
-			status = "okay";
+			regulator-always-on;			
+			regulator-boot-on;
+                        status = "okay";
 		};
 	};
 

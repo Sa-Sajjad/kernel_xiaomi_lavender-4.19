@@ -70,9 +70,9 @@
 		status = "ok";
 		compatible = "fpc,fpc1020";
 		interrupt-parent = <&tlmm>;
-		interrupts = <72 0x0>;
-		fpc,gpio_rst    = <&tlmm 20 0x0>;
-		fpc,gpio_irq    = <&tlmm 72 0x0>;
+		interrupts = <72 0x3>;
+		fpc,gpio_rst    = <&tlmm 20 0x1>;
+		fpc,gpio_irq    = <&tlmm 72 0x3>;
 		vcc_spi-supply  = <&pm660_l13>;
 		vdd_io-supply   = <&pm660_l13>;
 		vdd_ana-supply  = <&pm660_l13>;
@@ -84,5 +84,8 @@
 		pinctrl-2 = <&msm_gpio_72>;
 		fpc,enable-on-boot;
 		fpc,enable-wakeup;
+		fpc,keep-vcc-on-suspend;
+		qcom,wakeup-enable;
+		fpc,irq-is-wakeup;
 	};
 };

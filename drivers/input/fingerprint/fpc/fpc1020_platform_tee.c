@@ -37,6 +37,8 @@
 #include <linux/regulator/consumer.h>
 #include <linux/notifier.h>
 #include <linux/fb.h>
+#include <linux/interrupt.h>
+#include <linux/irq.h>
 
 #ifdef CONFIG_TOUCHSCREEN_COMMON
 #include <linux/input.h>
@@ -437,7 +439,8 @@ static inline int device_prepare(struct fpc1020_data *fpc1020, bool enable)
 		}
 
 		dev_dbg(dev, "requested irq %d\n", gpio_to_irq(fpc1020->irq_gpio));
-
+                
+                irq_set_irq_type(gpio_to_irq(fpc1020->irq_gpio), IRQ_TYPE_EDGE_BOTH);
 		/* Request that the interrupt should be wakeable */
 		enable_irq_wake(gpio_to_irq(fpc1020->irq_gpio));
 #endif
@@ -678,14 +681,15 @@ static ssize_t compatible_all_set(struct device *dev, struct device_attribute *a
 									   NULL, fpc1020_irq_handler,
 									   irqf,
 									   dev_name(dev), fpc1020);
-		if (rc) {
+		if (rc) {10;rgb:cccc/cccc/cccc
 			dev_err(dev, "could not request irq %d\n", gpio_to_irq(fpc1020->irq_gpio));
 			goto exit;
 		}
 		dev_dbg(dev, "requested irq %d\n", gpio_to_irq(fpc1020->irq_gpio));
 
 		/* Request that the interrupt should be wakeable */
-		enable_irq_wake(gpio_to_irq(fpc1020->irq_gpio));
+                irq_set_irq_type(gpio_to_irq(fpc1020->irq_gpio), IRQ_TYPE_EDGE_BOTH);
+                enable_irq_wake(gpio_to_irq(fpc1020->irq_gpio));
 		fpc1020->compatible_enabled = 1;
 		if (of_property_read_bool(dev->of_node, "fpc,enable-on-boot")) {
 			dev_info(dev, "Enabling hardware\n");
@@ -709,9 +713,10 @@ static ssize_t compatible_all_set(struct device *dev, struct device_attribute *a
 		if (gpio_is_valid(fpc1020->rst_gpio)) {
 			devm_gpio_free(dev, fpc1020->rst_gpio);
 			pr_info("remove rst_gpio success\n");
-		}
+		}10;rgb:cccc/cccc/cccc
+		
 		devm_free_irq(dev, gpio_to_irq(fpc1020->irq_gpio), fpc1020);
-
+		
 		rc = select_pin_ctl(fpc1020, "fpc1020_avdd_suspend");
 		if (rc)
 			goto exit;
@@ -721,7 +726,7 @@ static ssize_t compatible_all_set(struct device *dev, struct device_attribute *a
 		if (rc)
 			goto exit;
 		usleep_range(PWR_ON_SLEEP_MIN_US, PWR_ON_SLEEP_MAX_US);
-
+		
 		fpc1020->compatible_enabled = 0;
 	}
 	return count;
@@ -783,23 +788,14 @@ static const struct attribute_group attribute_group = {
 static inline irqreturn_t fpc1020_irq_handler(int irq, void *handle)
 {
 	struct fpc1020_data *fpc1020 = handle;
-
-	dev_dbg(fpc1020->dev, "%s\n", __func__);
-
-	if (atomic_read(&fpc1020->wakeup_enabled)) {
-		__pm_wakeup_event(fpc1020->ttw_wl,
-					msecs_to_jiffies(FPC_TTW_HOLD_TIME));
+	
+	if (fpc1020->ttw_wl) {
+                __pm_wakeup_event(fpc1020->ttw_wl, msecs_to_jiffies(4000));
 	}
 
 	sysfs_notify(&fpc1020->dev->kobj, NULL, dev_attr_irq.attr.name);
-#ifdef CONFIG_MACH_XIAOMI_SDM660
-	if (fpc1020->wait_finger_down && fpc1020->fb_black && fpc1020->prepared) {
-#else
-	if (fpc1020->wait_finger_down && fpc1020->fb_black) {
-#endif
-		pr_debug("%s enter\n", __func__);
-		fpc1020->wait_finger_down = false;
-	}
+
+	fpc1020->wait_finger_down = false;
 
 	return IRQ_HANDLED;
 }

@@ -50,7 +50,7 @@
 		config {
 			pins = "gpio72";
 			drive-strength=<2>;
-			bias-pull-down;
+			bias-pull-up;
 		};
 	};
 
