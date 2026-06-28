@@ -894,7 +894,7 @@ static int do_get_hook_type(void __user *arg)
 #elif defined(CONFIG_KSU_MANUAL_HOOK)
     const char *type = "Manual";
 #elif defined(CONFIG_KSU_SUSFS)
-    const char *type = "Inline";
+    const char *type = "Kucing Jawa";
 #else
 #error "Unsupported hook type"
 #endif
