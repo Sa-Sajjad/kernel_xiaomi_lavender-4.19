@@ -1,0 +1,194 @@
+package com.resukisu.resukisu.ui.component
+
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Error
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import com.resukisu.resukisu.ui.theme.getCardColors
+import com.resukisu.resukisu.ui.theme.getCardElevation
+import com.resukisu.resukisu.ui.theme.renderBackgroundBlur
+
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
+@Composable
+fun WarningCard(
+    modifier: Modifier = Modifier,
+    renderBackground: Boolean = true,
+    shape: Shape = RoundedCornerShape(16.dp),
+    message: String,
+    content: (@Composable () -> Unit) = {},
+    color: Color? = null,
+    onClick: (() -> Unit)? = null,
+    onClose: (() -> Unit)? = null,
+    icon: (@Composable () -> Unit)? = null
+) {
+    WarningCardInner(
+        modifier = modifier,
+        renderBackground = renderBackground,
+        shape = shape,
+        content = {
+            Text(
+                text = message,
+                style = MaterialTheme.typography.bodyMediumEmphasized,
+                modifier = Modifier
+                    .wrapContentHeight(Alignment.CenterVertically)
+            )
+        },
+        color = color,
+        end = content,
+        onClick = onClick,
+        onClose = onClose,
+        icon = icon
+    )
+}
+
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
+@Composable
+fun WarningCard(
+    modifier: Modifier = Modifier,
+    renderBackground: Boolean = true,
+    shape: Shape = RoundedCornerShape(16.dp),
+    message: AnnotatedString,
+    content: (@Composable () -> Unit) = {},
+    color: Color? = null,
+    onClick: (() -> Unit)? = null,
+    onClose: (() -> Unit)? = null,
+    icon: (@Composable () -> Unit)? = null
+) {
+    WarningCardInner(
+        modifier = modifier,
+        renderBackground = renderBackground,
+        shape = shape,
+        content = {
+            Text(
+                text = message,
+                style = MaterialTheme.typography.bodyMediumEmphasized,
+                modifier = Modifier
+                    .wrapContentHeight(Alignment.CenterVertically)
+            )
+        },
+        color = color,
+        end = content,
+        onClick = onClick,
+        onClose = onClose,
+        icon = icon
+    )
+}
+
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
+@Composable
+private fun WarningCardInner(
+    modifier: Modifier = Modifier,
+    renderBackground: Boolean = true,
+    shape: Shape = CardDefaults.elevatedShape,
+    content: (@Composable () -> Unit),
+    end: (@Composable () -> Unit),
+    color: Color? = null,
+    onClick: (() -> Unit)? = null,
+    onClose: (() -> Unit)? = null,
+    icon: (@Composable () -> Unit)? = null
+) {
+    ElevatedCard(
+        modifier = modifier
+            .clip(shape)
+            .then(
+                if (renderBackground) Modifier.renderBackgroundBlur(
+                    color ?: MaterialTheme.colorScheme.errorContainer
+                ) else Modifier
+            ),
+        shape = shape,
+        colors = getCardColors(
+            color ?: MaterialTheme.colorScheme.errorContainer,
+            renderBackground = renderBackground
+        ),
+        elevation = getCardElevation(),
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .then(onClick?.let { Modifier.clickable { it() } } ?: Modifier)
+                .padding(20.dp)
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.CenterStart)
+                    .padding(end = 40.dp)
+            ) {
+                if (icon != null) {
+                    icon()
+                } else {
+                    Icon(
+                        imageVector = Icons.Default.Error,
+                        contentDescription = null,
+                        modifier = Modifier.size(18.dp)
+                    )
+                }
+
+                Spacer(modifier = Modifier.width(12.dp))
+
+                content()
+            }
+
+
+            if (onClose != null) {
+                Icon(
+                    imageVector = Icons.Default.Close,
+                    contentDescription = stringResource(android.R.string.cancel),
+                    modifier = Modifier
+                        .clickable {
+                            onClose()
+                        }
+                        .size(18.dp)
+                        .align(Alignment.TopEnd)
+                )
+            }
+
+            Box(
+                modifier = Modifier.align(Alignment.TopEnd)
+            ) {
+                end()
+            }
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun WarningCardPreview() {
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        WarningCard(message = "Warning message")
+        WarningCard(message = "Warning message", onClose = {})
+        WarningCard(
+            message = "Warning message ",
+            color = MaterialTheme.colorScheme.outlineVariant,
+        ) {}
+    }
+}
