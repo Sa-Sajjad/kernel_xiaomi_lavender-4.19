@@ -271,9 +271,9 @@ SYSCALL_DEFINE1(brk, unsigned long, brk)
 success:
 	populate = newbrk > oldbrk && (mm->def_flags & VM_LOCKED) != 0;
 	if (downgraded)
-		up_read(&mm->mmap_sem);
+		mmap_read_unlock(mm);
 	else
-		up_write(&mm->mmap_sem);
+		mmap_write_unlock(mm);
 	userfaultfd_unmap_complete(mm, &uf);
 	if (populate)
 		mm_populate(oldbrk, newbrk - oldbrk);
@@ -281,7 +281,7 @@ success:
 
 out:
 	retval = origbrk;
-	up_write(&mm->mmap_sem);
+	mmap_write_unlock(mm);
 	return retval;
 }
 
@@ -1416,7 +1416,7 @@ static inline bool file_mmap_ok(struct file *file, struct inode *inode,
 }
 
 /*
- * The caller must hold down_write(&current->mm->mmap_sem).
+ * The caller must hold mmap_write_lock(current->mm).
  */
 unsigned long do_mmap(struct file *file, unsigned long addr,
 			unsigned long len, unsigned long prot,
@@ -2946,7 +2946,7 @@ int __do_munmap(struct mm_struct *mm, unsigned long start, size_t len,
 		downgrade = false;
 
 	if (downgrade)
-		downgrade_write(&mm->mmap_sem);
+		mmap_write_downgrade(mm);
 
 	unmap_region(mm, vma, prev, start, end);
 
@@ -2979,10 +2979,10 @@ static int __vm_munmap(unsigned long start, size_t len, bool downgrade)
 	 * it to 0 before return.
 	 */
 	if (ret == 1) {
-		up_read(&mm->mmap_sem);
+		mmap_read_unlock(mm);
 		ret = 0;
 	} else
-		up_write(&mm->mmap_sem);
+		mmap_write_unlock(mm);
 
 	userfaultfd_unmap_complete(mm, &uf);
 	return ret;

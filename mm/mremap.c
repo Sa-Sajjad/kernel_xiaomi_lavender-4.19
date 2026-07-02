@@ -931,9 +931,9 @@ out:
 	if (offset_in_page(ret))
 		locked = 0;
 	if (downgraded)
-		up_read(&current->mm->mmap_sem);
+		mmap_read_unlock(current->mm);
 	else
-		up_write(&current->mm->mmap_sem);
+		mmap_write_unlock(current->mm);
 	if (locked && new_len > old_len)
 		mm_populate(new_addr + old_len, new_len - old_len);
 	userfaultfd_unmap_complete(mm, &uf_unmap_early);
