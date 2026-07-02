@@ -9,7 +9,6 @@
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <linux/list.h>
-#include <linux/mmap_lock.h>
 #include <linux/sched/mm.h>
 #include <linux/module.h>
 #include <linux/rtmutex.h>
@@ -18,6 +17,7 @@
 #include <linux/vmalloc.h>
 #include <linux/slab.h>
 #include <linux/sched.h>
+#include <linux/mmap_lock.h>
 #include <linux/list_lru.h>
 #include <linux/ratelimit.h>
 #include <asm/cacheflush.h>
