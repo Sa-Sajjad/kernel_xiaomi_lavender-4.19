@@ -114,9 +114,10 @@ void show_swap_cache_info(void)
  */
 int __add_to_swap_cache(struct page *page, swp_entry_t entry, void **shadowp)
 {
+	struct address_space *address_space = swap_address_space(entry);
 	int error, i, nr = hpage_nr_pages(page);
-	struct address_space *address_space;
 	pgoff_t idx = swp_offset(entry);
+	XA_STATE_ORDER(xas, &address_space->i_pages, idx, compound_order(page));
 
 	VM_BUG_ON_PAGE(!PageLocked(page), page);
 	VM_BUG_ON_PAGE(PageSwapCache(page), page);
@@ -125,32 +126,27 @@ int __add_to_swap_cache(struct page *page, swp_entry_t entry, void **shadowp)
 	page_ref_add(page, nr);
 	SetPageSwapCache(page);
 
-	address_space = swap_address_space(entry);
-	xa_lock_irq(&address_space->i_pages);
-	for (i = 0; i < nr; i++) {
-		void *item;
-		void __rcu **slot;
-		struct radix_tree_node *node;
+	xas_lock_irq(&xas);
+	xas_create_range(&xas);
+	error = xas_error(&xas);
+	if (!error) {
+		for (i = 0; i < nr; i++) {
+			void *item;
 
-		set_page_private(page + i, entry.val + i);
-		error = __radix_tree_create(&address_space->i_pages,
-					    idx + i, 0, &node, &slot);
-		if (unlikely(error))
-			break;
+			VM_BUG_ON_PAGE(xas.xa_index != idx + i, page);
+			item = xas_load(&xas);
+			if (WARN_ON_ONCE(item && !radix_tree_exception(item))) {
+				error = -EEXIST;
+				break;
+			}
 
-		item = radix_tree_deref_slot_protected(slot,
-				&address_space->i_pages.xa_lock);
-		if (WARN_ON_ONCE(item && !radix_tree_exception(item))) {
-			error = -EEXIST;
-			break;
-		}
+			set_page_private(page + i, entry.val + i);
+			xas_store(&xas, page + i);
 
-		__radix_tree_replace(&address_space->i_pages, node, slot,
-				     page + i, NULL);
+			if (shadowp && i == 0)
+				*shadowp = xa_is_value(item) ? item : NULL;
 
-		if (shadowp) {
-			VM_BUG_ON(i);
-			*shadowp = item;
+			xas_next(&xas);
 		}
 	}
 	if (likely(!error)) {
@@ -172,7 +168,7 @@ int __add_to_swap_cache(struct page *page, swp_entry_t entry, void **shadowp)
 		ClearPageSwapCache(page);
 		page_ref_sub(page, nr);
 	}
-	xa_unlock_irq(&address_space->i_pages);
+	xas_unlock_irq(&xas);
 
 	return error;
 }

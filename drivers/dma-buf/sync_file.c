@@ -130,26 +130,19 @@ EXPORT_SYMBOL(sync_file_get_fence);
  * @buf:		destination buffer to copy sync_file name into
  * @len:		available size of destination buffer.
  *
- * Each sync_file may have a name assigned either by the user (when merging
- * sync_files together) or created from the fence it contains. In the latter
- * case construction of the name is deferred until use, and so requires
- * sync_file_get_name().
+ * The name is constructed from the fence it contains.
  *
  * Returns: a string representing the name.
  */
 char *sync_file_get_name(struct sync_file *sync_file, char *buf, int len)
 {
-	if (sync_file->user_name[0]) {
-		strlcpy(buf, sync_file->user_name, len);
-	} else {
-		struct dma_fence *fence = sync_file->fence;
+	struct dma_fence *fence = sync_file->fence;
 
-		snprintf(buf, len, "%s-%s%llu-%lld",
-			 fence->ops->get_driver_name(fence),
-			 fence->ops->get_timeline_name(fence),
-			 fence->context,
-			 fence->seqno);
-	}
+	snprintf(buf, len, "%s-%s%llu-%lld",
+		 fence->ops->get_driver_name(fence),
+		 fence->ops->get_timeline_name(fence),
+		 fence->context,
+		 fence->seqno);
 
 	return buf;
 }
