@@ -5,9 +5,9 @@
 ##----------------------------------------------------------##
 
 START=$(date +"%s")
-ZIPNAME="SW-lavender-4.19-$(date '+%Y%m%d-%H%M').zip"
-TC_DIR="$(pwd)/tc/zyc_clang"
-IMAGE="out/arch/arm64/boot/Image.gz"
+ZIPNAME="SW-NG-lavender-4.19-$(date '+%Y%m%d-%H%M').zip"
+TC_DIR="$(pwd)/tc/clang-r596125"
+IMAGE="out/arch/arm64/boot/Image.gz-dtb"
 
 DEFCONFIG="lavender_defconfig"
 
@@ -38,14 +38,7 @@ push() {
 ##----------------------------------------------------------##
 
 if ! [ -d "$TC_DIR" ]; then
-    echo "Clang not found, Downloading clang source."
-    mkdir -p "$TC_DIR"
-    wget https://github.com/ZyCromerZ/Clang/releases/download/15.0.7-20251111-release/Clang-15.0.7-20251111.tar.gz -O "$TC_DIR/zyc_clang.tar.gz"
-    echo "Extracting Clang source."
-    if ! tar -xvf "$TC_DIR/zyc_clang.tar.gz" -C "$TC_DIR" >/dev/null 2>&1; then
-        echo "Extracting failed! Aborting..."
-        exit 1
-    fi
+    git clone --depth=1 "https://gitlab.com/crdroidandroid/android_prebuilts_clang_host_linux-x86_clang-r596125" "$TC_DIR" || exit 1
 fi
 
 ##----------------------------------------------------------##
