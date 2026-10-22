@@ -1075,7 +1075,7 @@ static void remove_waiter(struct rt_mutex *lock,
 
 	lockdep_assert_held(&lock->wait_lock);
 
-	if (!waiter_task)
+	if (!waiter_task) /* never enqueued */
 		return;
 
 	raw_spin_lock(&waiter_task->pi_lock);
