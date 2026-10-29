@@ -5,7 +5,7 @@
 ##----------------------------------------------------------##
 
 START=$(date +"%s")
-ZIPNAME="SW-NG-lavender-4.19-$(date '+%Y%m%d-%H%M').zip"
+ZIPNAME="SW-NG-Ext-lavender-4.19-$(date '+%Y%m%d-%H%M').zip"
 TC_DIR="$(pwd)/tc/clang-r596125"
 IMAGE="out/arch/arm64/boot/Image.gz-dtb"
 
@@ -38,7 +38,7 @@ push() {
 ##----------------------------------------------------------##
 
 if ! [ -d "$TC_DIR" ]; then
-    git clone --depth=1 "https://gitlab.com/crdroidandroid/android_prebuilts_clang_host_linux-x86_clang-r596125" "$TC_DIR" || exit 1
+    git clone --depth=1 "https://gitlab.com/crdroidandroid/android_prebuilts_clang_host_linux-x86_clang-r563880c.git" "$TC_DIR" || exit 1
 fi
 
 ##----------------------------------------------------------##
