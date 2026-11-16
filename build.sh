@@ -16,6 +16,13 @@ export KBUILD_BUILD_HOST="SNX"
 export LLVM=1
 export LLVM_IAS=1
 
+# KernelSU 
+if [ "$1" = "--ksu" ]; then
+  echo "CONFIG_KSU=y" >> arch/arm64/configs/lavender_defconfig
+  echo "CONFIG_KSU_MANUAL_HOOK=y" >> arch/arm64/configs/lavender_defconfig
+  curl -LSs "https://raw.githubusercontent.com/Baka-SU/BakaSU/main/kernel/setup.sh" | bash
+fi
+
 ##----------------------------------------------------------##
 post_msg() {
     curl -s -X POST "https://api.telegram.org/bot$token/sendMessage" \
