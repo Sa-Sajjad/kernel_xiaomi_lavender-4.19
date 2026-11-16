@@ -238,7 +238,7 @@ static inline u32 task_sid(const struct task_struct *task)
 	return sid;
 }
 
-static int inode_doinit_with_dentry(struct inode *inode, struct dentry *opt_dentry);
+int inode_doinit_with_dentry(struct inode *inode, struct dentry *opt_dentry);
 
 /*
  * Try reloading inode security labels that have been marked as invalid.  The
@@ -1368,7 +1368,7 @@ static int inode_doinit_use_xattr(struct inode *inode, struct dentry *dentry,
 }
 
 /* The inode's security attributes must be initialized before first use. */
-static int inode_doinit_with_dentry(struct inode *inode, struct dentry *opt_dentry)
+int inode_doinit_with_dentry(struct inode *inode, struct dentry *opt_dentry)
 {
 	struct superblock_security_struct *sbsec = NULL;
 	struct inode_security_struct *isec = selinux_inode(inode);
@@ -3106,7 +3106,7 @@ static bool has_cap_mac_admin(bool audit)
 	return true;
 }
 
-static int selinux_inode_setxattr(struct dentry *dentry, const char *name,
+int selinux_inode_setxattr(struct dentry *dentry, const char *name,
 				  const void *value, size_t size, int flags)
 {
 	struct inode *inode = d_backing_inode(dentry);
